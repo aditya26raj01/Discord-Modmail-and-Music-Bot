@@ -132,7 +132,7 @@ React to confirm a thread.''',
     await client.process_commands(message)
 
 @client.command()
-async def close(ctx,*,reason="No Reason Provided!"):
+async def close(ctx,*,reason="No Reason Provided!",has_role="Admin"):
     if str(ctx.channel.category) != "modmail":
         return
     
@@ -155,7 +155,7 @@ async def close(ctx,*,reason="No Reason Provided!"):
     await ctx.send(f"Mail with <@{user_id}> is closed now.")
 
 @client.command()
-async def delete(ctx):
+async def delete(ctx,has_role="Admin"):
     if str(ctx.channel.category) != "modmail":
         return
     
