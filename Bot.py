@@ -71,11 +71,19 @@ React to confirm a thread.''',
             return user == message.author and str(reaction.emoji) in ["✅","❌"]
         
         try:
-            reaction, user = await client.wait_for('reaction_add', timeout=60.0, check=check)
+            reaction, user = await client.wait_for('reaction_add', timeout=10.0, check=check)
+            await msg.remove_reaction("❌",client.user)
+            await msg.remove_reaction("✅",client.user)
 
             if str(reaction.emoji)=="✅":
-                await msg.remove_reaction("❌",client.user)
-                await msg.remove_reaction("✅",client.user)
+                
+                embed=discord.Embed(
+                    title="Ticket Opened",
+                    color=0x42f542
+                )
+                embed.add_field(name="Created By :",value=message.author,inline=False)
+                channel = discord.utils.get(guild.channels, name="modmail-logs")
+                await channel.send(embed=embed) 
 
                 name = "modmail"
                 category = discord.utils.get(guild.categories, name=name)
@@ -116,32 +124,44 @@ React to confirm a thread.''',
                 await message.channel.send(embed=embed)
 
             if str(reaction.emoji)=="❌":
-                await msg.remove_reaction("❌",client.user)
-                await msg.remove_reaction("✅",client.user)
-
                 embed=discord.Embed(
                     title="Cancelled",
                     color=0xff3c00)
                 embed.set_footer(text="Replying will create a New Thread")
                 embed.timestamp=datetime.datetime.utcnow()
-                await message.channel.send(embed=embed)
+                await msg.delete()
+                msg = await message.channel.send(embed=embed)
+                await asyncio.sleep(20)
+                await msg.delete()
 
         except asyncio.TimeoutError:
-            await message.channel.send("Timeout Error... Try Again!")
-    
+            await msg.delete()
+            msg = await message.channel.send("Timeout Error... Try Again!")
+            await asyncio.sleep(20)
+            await msg.delete()
     await client.process_commands(message)
 
 @client.command()
 async def close(ctx,*,reason="No Reason Provided!",has_role="Admin"):
     if str(ctx.channel.category) != "modmail":
         return
-    
+    guild=client.get_guild(779532880959242250)
+
     for id, channel_id in sent_users.items():
         if ctx.channel.id == channel_id:
             user_id = id
     
     sent_users.pop(user_id)
-
+    user=await client.fetch_user(user_id)
+    embed=discord.Embed(
+        title="Ticket Closed",
+        color=0xff3c00
+    )
+    embed.add_field(name="Created By :",value=user,inline=False)
+    embed.add_field(name="Closed By :",value=ctx.author,inline=False)
+    channel = discord.utils.get(guild.channels, name="modmail-logs")
+    await channel.send(embed=embed)
+    
     embed=discord.Embed(
         title="Thread Closed",
         description=f"{reason}",
@@ -161,4 +181,17 @@ async def delete(ctx,has_role="Admin"):
     
     await ctx.channel.delete()
 
+@client.command()
+async def setup(ctx,has_role="Admin"):
+    guild=client.get_guild(779532880959242250)
+    category = discord.utils.get(guild.categories, name = "modmail")
+    if category:
+        await ctx.send("Setup Already Complete")    
+        return
+    
+    cat = await guild.create_category("modmail")
+    await cat.set_permissions(guild.default_role, read_messages=False)
+    category = discord.utils.get(guild.categories, name="modmail")
+    await guild.create_text_channel("modmail-logs", category=category)
+    await ctx.send("Setup Complete")
 client.run("ODQ4NTQ5NDAxNTMzNjEyMDYy.YLOPNg.-ReUjCsZGnJV8he1trdDeT1AoAI")
