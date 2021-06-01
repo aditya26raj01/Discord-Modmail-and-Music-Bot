@@ -179,7 +179,8 @@ async def delete(ctx,has_role="Admin"):
     if str(ctx.channel.category) != "modmail":
         return
     
-    await ctx.channel.delete()
+    if str(ctx.channel) != "modmail-logs":
+        await ctx.channel.delete()
 
 @client.command()
 async def setup(ctx,has_role="Admin"):
