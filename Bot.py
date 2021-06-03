@@ -10,13 +10,13 @@ async def on_ready():
     print("Bot is Online")
     await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="DM Reports!"))
 
+
 sent_users={}
+empty_array=[]
 
 @client.event
 async def on_message(message):
-    guild=client.get_guild(779532880959242250)
-    empty_array=[]
-        
+    guild=client.get_guild(779532880959242250)        
     if message.author == client.user:
         return
 
@@ -95,6 +95,19 @@ React to confirm a thread.''',
                     title="New ticket",
                     description="Type messages in this channel to reply. Messages starting with ``+`` will be ignored and and can be used for staff discussions. To close the thread use ``+close`` and ``+delete`` to delete the client channel.",
                     color=0xfcba03)
+
+                member = guild.get_member(message.author.id)
+                mention = []
+                for role in member.roles:
+                    if role.name != "@everyone":
+                        mention.append(role.mention)
+                    
+                b = ", ".join(mention)
+
+                embed.add_field(name="Nickname:",value=member.nick,inline=False)
+                embed.add_field(name="Roles:",value=b,inline=False)
+                embed.add_field(name="User ID:",value=message.author.id,inline=False)  
+                embed.set_thumbnail(url=member.avatar_url)
                 embed.set_footer(text=message.author)
                 embed.timestamp=datetime.datetime.utcnow()
                 await modmail_channel.send(embed=embed)
@@ -130,27 +143,24 @@ React to confirm a thread.''',
                 embed.set_footer(text="Replying will create a New Thread")
                 embed.timestamp=datetime.datetime.utcnow()
                 await msg.delete()
-                msg = await message.channel.send(embed=embed)
-                await asyncio.sleep(20)
-                await msg.delete()
-
+                await message.channel.send(embed=embed)
+                
         except asyncio.TimeoutError:
             await msg.delete()
-            msg = await message.channel.send("Timeout Error... Try Again!")
-            await asyncio.sleep(20)
-            await msg.delete()
+            await message.channel.send("Timeout Error... Try Again!")
+            
     await client.process_commands(message)
 
 @client.command()
 async def close(ctx,*,reason="No Reason Provided!",has_role="Admin"):
     if str(ctx.channel.category) != "modmail":
         return
-    guild=client.get_guild(779532880959242250)
 
     for id, channel_id in sent_users.items():
         if ctx.channel.id == channel_id:
             user_id = id
-    
+
+    guild=client.get_guild(779532880959242250)
     sent_users.pop(user_id)
     user=await client.fetch_user(user_id)
     embed=discord.Embed(
@@ -178,7 +188,6 @@ async def close(ctx,*,reason="No Reason Provided!",has_role="Admin"):
 async def delete(ctx,has_role="Admin"):
     if str(ctx.channel.category) != "modmail":
         return
-    
     if str(ctx.channel) != "modmail-logs":
         await ctx.channel.delete()
 
@@ -195,4 +204,18 @@ async def setup(ctx,has_role="Admin"):
     category = discord.utils.get(guild.categories, name="modmail")
     await guild.create_text_channel("modmail-logs", category=category)
     await ctx.send("Setup Complete")
+
+@client.command()
+async def cleardm(ctx,id,has_role="Admin"):
+
+    msg = await ctx.channel.send("Deletion Started...")
+    messages_to_remove = 1000
+
+    async for message in client.get_user(int(id)).history(limit=messages_to_remove):
+        if message.author.id == client.user.id:
+            await message.delete()
+        await asyncio.sleep(0.5)
+    await msg.delete()
+    await ctx.channel.send("Done")
+
 client.run("ODQ4NTQ5NDAxNTMzNjEyMDYy.YLOPNg.-ReUjCsZGnJV8he1trdDeT1AoAI")
