@@ -250,10 +250,12 @@ async def play(ctx,*,song_name : str):
     voice.play(discord.FFmpegPCMAudio(URL))
 
 @client.command()
-async def leave(ctx):
+async def dc(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice.is_connected():
+        voice.stop()
         await voice.disconnect()
+        await ctx.send(":mailbox_with_no_mail: **Successfully Disconnected**")
     else:
         await ctx.send("The bot is not connected to a voice channel.")
 
@@ -263,6 +265,7 @@ async def pause(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice.is_playing():
         voice.pause()
+        await ctx.send("⏸ **Music Paused**")
     else:
         await ctx.send("Currently no audio is playing.")
 
@@ -272,6 +275,7 @@ async def resume(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice.is_paused():
         voice.resume()
+        await ctx.send("▶ **Music Paused**")
     else:
         await ctx.send("The audio is not paused.")
 
