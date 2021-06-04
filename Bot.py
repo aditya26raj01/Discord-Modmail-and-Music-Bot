@@ -247,7 +247,7 @@ async def play(ctx,*,song_name : str):
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(link, download=False)
         URL = info['formats'][0]['url']
-    
+    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     await ctx.send(f"Playing **{videosSearch.result()['result'][0]['title']}**")
     voice.play(discord.FFmpegPCMAudio(URL))
 
