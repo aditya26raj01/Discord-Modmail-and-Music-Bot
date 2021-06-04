@@ -2,7 +2,10 @@ import discord
 from discord.ext import commands
 import asyncio
 import datetime
-
+import youtube_dl
+import os
+import ctypes
+import ctypes.util
 client=commands.Bot(command_prefix="+",intents=discord.Intents.all())
 
 @client.event
@@ -17,6 +20,7 @@ empty_array=[]
 @client.event
 async def on_message(message):
     guild=client.get_guild(779532880959242250)        
+    
     if message.author == client.user:
         return
 
@@ -85,8 +89,7 @@ React to confirm a thread.''',
                 channel = discord.utils.get(guild.channels, name="modmail-logs")
                 await channel.send(embed=embed) 
 
-                name = "modmail"
-                category = discord.utils.get(guild.categories, name=name)
+                category = discord.utils.get(guild.categories, name="modmail")
                 channel_name=(((str(message.author)).replace(" ","-")).replace("#","-")).lower()
                 modmail_channel=await guild.create_text_channel(channel_name, category=category)
                 await modmail_channel.set_permissions(guild.default_role, read_messages=False)
@@ -165,8 +168,8 @@ async def close(ctx,*,reason="No Reason Provided!",has_role="Admin"):
     user=await client.fetch_user(user_id)
     embed=discord.Embed(
         title="Ticket Closed",
-        color=0xff3c00
-    )
+        color=0xff3c00)
+        
     embed.add_field(name="Created By :",value=user,inline=False)
     embed.add_field(name="Closed By :",value=ctx.author,inline=False)
     channel = discord.utils.get(guild.channels, name="modmail-logs")
@@ -217,5 +220,67 @@ async def cleardm(ctx,id,has_role="Admin"):
         await asyncio.sleep(0.5)
     await msg.delete()
     await ctx.channel.send("Done")
+
+@client.command()
+async def play(ctx, url : str):
+    song_there = os.path.isfile("song.mp3")
+    try:
+        if song_there:
+            os.remove("song.mp3")
+    except PermissionError:
+        await ctx.send("Wait for the current playing music to end or use the 'stop' command")
+        return
+
+    voiceChannel = discord.utils.get(ctx.guild.voice_channels, name='「🎵」Music 1 [ ! ]')
+    await voiceChannel.connect()
+    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
+    }
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([url])
+    for file in os.listdir("./"):
+        if file.endswith(".mp3"):
+            os.rename(file, "song.mp3")
+    voice.play(discord.FFmpegPCMAudio("song.mp3"))
+
+
+@client.command()
+async def leave(ctx):
+    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+    if voice.is_connected():
+        await voice.disconnect()
+    else:
+        await ctx.send("The bot is not connected to a voice channel.")
+
+
+@client.command()
+async def pause(ctx):
+    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+    if voice.is_playing():
+        voice.pause()
+    else:
+        await ctx.send("Currently no audio is playing.")
+
+
+@client.command()
+async def resume(ctx):
+    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+    if voice.is_paused():
+        voice.resume()
+    else:
+        await ctx.send("The audio is not paused.")
+
+
+@client.command()
+async def stop(ctx):
+    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+    voice.stop()
 
 client.run("ODQ4NTQ5NDAxNTMzNjEyMDYy.YLOPNg.-ReUjCsZGnJV8he1trdDeT1AoAI")
