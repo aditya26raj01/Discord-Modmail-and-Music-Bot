@@ -4,7 +4,8 @@ import asyncio
 import datetime
 import youtube_dl
 import os
-
+import ctypes
+import ctypes.util
 from youtubesearchpython import VideosSearch
 client=commands.Bot(command_prefix="+",intents=discord.Intents.all())
 
@@ -232,30 +233,30 @@ async def play(ctx,*,song_name : str):
     except PermissionError:
         await ctx.send("Wait for the current playing music to end or use the 'stop' command")
         return
-    
+
     voiceChannel = discord.utils.get(ctx.guild.voice_channels, name='「🎵」Music 1 [ ! ]')
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice == None:
         await voiceChannel.connect()
+    
     await ctx.send(f":mag_right:Searching for **{song_name}**")
     videosSearch = VideosSearch(str(song_name)+" lyrics", limit = 1)
     link=videosSearch.result()['result'][0]['link']    
     
     ydl_opts = {'format': 'bestaudio'}
+    FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(link, download=False)
         URL = info['formats'][0]['url']
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     await ctx.send(f"Playing **{videosSearch.result()['result'][0]['title']}**")
-    voice.play(discord.FFmpegPCMAudio(URL))
+    voice.play(discord.FFmpegPCMAudio(URL, **FFMPEG_OPTIONS))
 
 @client.command()
-async def dc(ctx):
+async def leave(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice.is_connected():
-        voice.stop()
         await voice.disconnect()
-        await ctx.send(":mailbox_with_no_mail: **Successfully Disconnected**")
     else:
         await ctx.send("The bot is not connected to a voice channel.")
 
@@ -265,7 +266,6 @@ async def pause(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice.is_playing():
         voice.pause()
-        await ctx.send("⏸ **Music Paused**")
     else:
         await ctx.send("Currently no audio is playing.")
 
@@ -275,7 +275,6 @@ async def resume(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice.is_paused():
         voice.resume()
-        await ctx.send("▶ **Music Paused**")
     else:
         await ctx.send("The audio is not paused.")
 
