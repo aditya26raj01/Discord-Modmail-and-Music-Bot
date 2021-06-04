@@ -238,25 +238,18 @@ async def play(ctx,*,song_name : str):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice == None:
         await voiceChannel.connect()
-    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     
+    await ctx.send(f":mag_right:Searching for **{song_name}**")
     videosSearch = VideosSearch(str(song_name)+" lyrics", limit = 1)
     link=videosSearch.result()['result'][0]['link']    
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }],
-    }
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([link])
-    for file in os.listdir("./"):
-        if file.endswith(".mp3"):
-            os.rename(file, "song.mp3")
-    voice.play(discord.FFmpegPCMAudio("song.mp3"))
     
+    ydl_opts = {'format': 'bestaudio'}
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(link, download=False)
+        URL = info['formats'][0]['url']
+    
+    await ctx.send(f"Playing **{videosSearch.result()['result'][0]['title']}**")
+    voice.play(discord.FFmpegPCMAudio(URL))
 
 @client.command()
 async def leave(ctx):
