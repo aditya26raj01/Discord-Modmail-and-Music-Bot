@@ -4,7 +4,9 @@ import asyncio
 import datetime
 import youtube_dl
 import os
-
+import ctypes
+import ctypes.util
+from youtubesearchpython import VideosSearch
 client=commands.Bot(command_prefix="+",intents=discord.Intents.all())
 
 @client.event
@@ -220,8 +222,10 @@ async def cleardm(ctx,id,has_role="Admin"):
     await msg.delete()
     await ctx.channel.send("Done")
 
+#---------------------------------------------------------------------------------
+
 @client.command()
-async def play(ctx, url : str):
+async def play(ctx,*,song_name : str):
     song_there = os.path.isfile("song.mp3")
     try:
         if song_there:
@@ -231,9 +235,13 @@ async def play(ctx, url : str):
         return
 
     voiceChannel = discord.utils.get(ctx.guild.voice_channels, name='「🎵」Music 1 [ ! ]')
-    await voiceChannel.connect()
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-
+    if voice == None:
+        await voiceChannel.connect()
+    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+    
+    videosSearch = VideosSearch(str(song_name)+" lyrics", limit = 1)
+    link=videosSearch.result()['result'][0]['link']    
     ydl_opts = {
         'format': 'bestaudio/best',
         'postprocessors': [{
@@ -243,12 +251,12 @@ async def play(ctx, url : str):
         }],
     }
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([url])
+        ydl.download([link])
     for file in os.listdir("./"):
         if file.endswith(".mp3"):
             os.rename(file, "song.mp3")
     voice.play(discord.FFmpegPCMAudio("song.mp3"))
-
+    
 
 @client.command()
 async def leave(ctx):
