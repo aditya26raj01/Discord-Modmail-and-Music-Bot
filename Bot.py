@@ -4,8 +4,7 @@ import asyncio
 import datetime
 import youtube_dl
 import os
-import ctypes
-import ctypes.util
+
 from youtubesearchpython import VideosSearch
 client=commands.Bot(command_prefix="+",intents=discord.Intents.all())
 
