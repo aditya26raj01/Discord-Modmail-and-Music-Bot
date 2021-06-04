@@ -233,12 +233,11 @@ async def play(ctx,*,song_name : str):
     except PermissionError:
         await ctx.send("Wait for the current playing music to end or use the 'stop' command")
         return
-
+    
     voiceChannel = discord.utils.get(ctx.guild.voice_channels, name='「🎵」Music 1 [ ! ]')
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice == None:
         await voiceChannel.connect()
-    
     await ctx.send(f":mag_right:Searching for **{song_name}**")
     videosSearch = VideosSearch(str(song_name)+" lyrics", limit = 1)
     link=videosSearch.result()['result'][0]['link']    
