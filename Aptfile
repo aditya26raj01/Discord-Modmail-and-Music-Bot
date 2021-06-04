@@ -1,7 +1,5 @@
 ECHO is on.
 libopus0
 git
-libopus-dev
-libssl-dev
 libffi-dev
 libsodium-dev
