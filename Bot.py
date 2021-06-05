@@ -305,5 +305,15 @@ async def resume(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice and voice.is_paused():
         voice.resume()
-        
+
+@client.command()                          
+async def volume(ctx, volume: float):                   
+    voice = get(client.voice_clients, guild=ctx.guild)  
+
+    if 0 <= volume <= 100:                              
+        if voice.is_playing():                          
+            new_volume = volume / 100                   
+            voice.source.volume = new_volume            
+            await ctx.reply(f"Volume: {volume}")
+      
 client.run("ODQ4NTQ5NDAxNTMzNjEyMDYy.YLOPNg.-ReUjCsZGnJV8he1trdDeT1AoAI")
