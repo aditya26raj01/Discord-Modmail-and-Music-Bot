@@ -239,7 +239,7 @@ def next_song(ctx):
 songs={}
 @client.command()
 async def play(ctx,*,song_name : str):
-    if str(ctx.channel) != "「🎵」Music":
+    if str(ctx.channel) != "「🎼」music-1":
         return
     if ctx.author.voice and str(ctx.author.voice.channel) == "「🎵」Music":
         voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
@@ -273,7 +273,7 @@ async def play(ctx,*,song_name : str):
 
 @client.command()
 async def stop(ctx):
-    if str(ctx.channel) != "「🎵」Music":
+    if str(ctx.channel) != "「🎼」music-1":
         return
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice and voice.is_playing():
@@ -282,7 +282,7 @@ async def stop(ctx):
         
 @client.command()
 async def dc(ctx):
-    if str(ctx.channel) != "「🎵」Music":
+    if str(ctx.channel) != "「🎼」music-1":
         return
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice and voice.is_connected():
@@ -292,7 +292,7 @@ async def dc(ctx):
         
 @client.command()
 async def pause(ctx):
-    if str(ctx.channel) != "「🎵」Music":
+    if str(ctx.channel) != "「🎼」music-1":
         return
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice and voice.is_playing():
@@ -300,7 +300,7 @@ async def pause(ctx):
             
 @client.command()
 async def resume(ctx):
-    if str(ctx.channel) != "「🎵」Music":
+    if str(ctx.channel) != "「🎼」music-1":
         return
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice and voice.is_paused():
