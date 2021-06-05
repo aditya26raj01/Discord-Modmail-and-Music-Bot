@@ -243,12 +243,12 @@ def audio_player(voice):
 
 @client.command()
 async def play(ctx,*,song_name : str):
-    if str(ctx.channel) != "「🎼」music-1":
+    if str(ctx.channel) != "「🎼」magma":
         return
-    if ctx.author.voice and str(ctx.author.voice.channel) == "「🎵」Music":
+    if ctx.author.voice and str(ctx.author.voice.channel) == "「🎵」MaGma":
         voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
         if not voice:
-            voiceChannel = discord.utils.get(ctx.guild.voice_channels, name='「🎵」Music')
+            voiceChannel = discord.utils.get(ctx.guild.voice_channels, name='「🎵」MaGma')
             await voiceChannel.connect()
             voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
         await ctx.send(f"🔎Searching for **{song_name}**")
@@ -262,11 +262,11 @@ async def play(ctx,*,song_name : str):
             songs.append(url)
             await ctx.send(f"Added to Queue **{title}**")
     else:
-        await ctx.send("Please connect to **「🎵」Music** to play music, then try again.")
+        await ctx.send("Please connect to **「🎵」MaGma** to play music, then try again.")
         
 @client.command()
 async def skip(ctx):
-    if str(ctx.channel) != "「🎼」music-1":
+    if str(ctx.channel) != "「🎼」magma":
         return
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice.is_playing():
@@ -280,7 +280,7 @@ async def skip(ctx):
     
 @client.command()
 async def stop(ctx):
-    if str(ctx.channel) != "「🎼」music-1":
+    if str(ctx.channel) != "「🎼」magma":
         return
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice and voice.is_playing():
@@ -290,7 +290,7 @@ async def stop(ctx):
 
 @client.command()
 async def dc(ctx):
-    if str(ctx.channel) != "「🎼」music-1":
+    if str(ctx.channel) != "「🎼」magma":
         return
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice and voice.is_connected():
@@ -301,7 +301,7 @@ async def dc(ctx):
 
 @client.command()
 async def pause(ctx):
-    if str(ctx.channel) != "「🎼」music-1":
+    if str(ctx.channel) != "「🎼」magma":
         return
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice and voice.is_playing():
@@ -310,7 +310,7 @@ async def pause(ctx):
 
 @client.command()
 async def resume(ctx):
-    if str(ctx.channel) != "「🎼」music-1":
+    if str(ctx.channel) != "「🎼」magma":
         return
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice and voice.is_paused():
