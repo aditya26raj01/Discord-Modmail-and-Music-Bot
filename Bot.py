@@ -297,7 +297,7 @@ async def dc(ctx):
         voice.stop()
         songs.clear()
         await voice.disconnect()
-        await ctx.send("**🚫 Disconnect**")
+        await ctx.send("**🚫 Disconnected**")
 
 @client.command()
 async def pause(ctx):
