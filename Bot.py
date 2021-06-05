@@ -1,11 +1,9 @@
+import re
 import discord
 from discord.ext import commands
 import asyncio
 import datetime
 import youtube_dl
-import os
-import ctypes
-import ctypes.util
 from youtubesearchpython import VideosSearch
 client=commands.Bot(command_prefix="+",intents=discord.Intents.all())
 
@@ -224,64 +222,88 @@ async def cleardm(ctx,id,has_role="Admin"):
 
 #---------------------------------------------------------------------------------
 
+def next_song(ctx):
+    try:
+        for title, url in songs.items():
+            title=title
+            url=url
+            break
+        voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+        FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+        voice.play(discord.FFmpegPCMAudio(url, **FFMPEG_OPTIONS),after = lambda e: next_song(ctx))
+        songs.pop(0)
+    except:
+        pass
+
+
+songs={}
 @client.command()
 async def play(ctx,*,song_name : str):
-    song_there = os.path.isfile("song.mp3")
-    try:
-        if song_there:
-            os.remove("song.mp3")
-    except PermissionError:
-        await ctx.send("Wait for the current playing music to end or use the 'stop' command")
+    if str(ctx.channel) != "「🎵」Music":
         return
+    if ctx.author.voice and str(ctx.author.voice.channel) == "「🎵」Music":
+        voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+        if not voice:
+            voiceChannel = discord.utils.get(ctx.guild.voice_channels, name='「🎵」Music')
+            await voiceChannel.connect()
+            voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
 
-    voiceChannel = discord.utils.get(ctx.guild.voice_channels, name='「🎵」Music 1 [ ! ]')
-    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-    if voice == None:
-        await voiceChannel.connect()
-    
-    await ctx.send(f":mag_right:Searching for **{song_name}**")
-    videosSearch = VideosSearch(str(song_name)+" lyrics", limit = 1)
-    link=videosSearch.result()['result'][0]['link']    
-    
-    ydl_opts = {'format': 'bestaudio'}
-    FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(link, download=False)
+        await ctx.send(f"🔎Searching for **{song_name}**")
+        
+        videosSearch = VideosSearch(song_name+" lyrics", limit = 1)
+        link=videosSearch.result()['result'][0]['link']
+            
+        ydl_opts = {'format': 'bestaudio'}
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(link, download=False)
         URL = info['formats'][0]['url']
-    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-    await ctx.send(f"Playing **{videosSearch.result()['result'][0]['title']}**")
-    voice.play(discord.FFmpegPCMAudio(URL, **FFMPEG_OPTIONS))
+        title = videosSearch.result()['result'][0]['title']
+        
+        if not voice.is_playing():
+            FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+            voice.play(discord.FFmpegPCMAudio(URL, **FFMPEG_OPTIONS), after = lambda e: next_song(ctx))
+            await ctx.send(f"🎶Playing **{title}**")
+        else:
+            songs[title] = URL
+            await ctx.send(f"Added to Queue **{title}**")
 
-@client.command()
-async def leave(ctx):
-    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-    if voice.is_connected():
-        await voice.disconnect()
     else:
-        await ctx.send("The bot is not connected to a voice channel.")
-
-
-@client.command()
-async def pause(ctx):
-    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-    if voice.is_playing():
-        voice.pause()
-    else:
-        await ctx.send("Currently no audio is playing.")
-
-
-@client.command()
-async def resume(ctx):
-    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-    if voice.is_paused():
-        voice.resume()
-    else:
-        await ctx.send("The audio is not paused.")
+        await ctx.send("Please connect to **「🎵」Music** to play music, then try again.")
 
 
 @client.command()
 async def stop(ctx):
+    if str(ctx.channel) != "「🎵」Music":
+        return
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-    voice.stop()
-
+    if voice and voice.is_playing():
+        voice.stop()
+        songs.clear()
+        
+@client.command()
+async def dc(ctx):
+    if str(ctx.channel) != "「🎵」Music":
+        return
+    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+    if voice and voice.is_connected():
+        voice.stop()
+        songs.clear()
+        await voice.disconnect()
+        
+@client.command()
+async def pause(ctx):
+    if str(ctx.channel) != "「🎵」Music":
+        return
+    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+    if voice and voice.is_playing():
+        voice.pause()
+            
+@client.command()
+async def resume(ctx):
+    if str(ctx.channel) != "「🎵」Music":
+        return
+    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+    if voice and voice.is_paused():
+        voice.resume()
+        
 client.run("ODQ4NTQ5NDAxNTMzNjEyMDYy.YLOPNg.-ReUjCsZGnJV8he1trdDeT1AoAI")
