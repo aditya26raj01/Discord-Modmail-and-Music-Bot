@@ -316,5 +316,16 @@ async def resume(ctx):
     if voice and voice.is_paused():
         voice.resume()
         await ctx.send("**▶️ Resumed**")
-        
+@client.command()                          
+async def volume(ctx, volume: float):
+    if str(ctx.channel) != "「🎼」magma":
+        return                   
+    voice = get(client.voice_clients, guild=ctx.guild)  
+
+    if 0 <= volume <= 100:                              
+        if voice.is_playing():                          
+            new_volume = volume / 100                   
+            voice.source.volume = new_volume            
+            await ctx.send(f"Volume: {volume}")
+
 client.run("ODQ4NTQ5NDAxNTMzNjEyMDYy.YLOPNg.-ReUjCsZGnJV8he1trdDeT1AoAI")
