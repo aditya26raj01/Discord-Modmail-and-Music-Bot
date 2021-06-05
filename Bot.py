@@ -278,7 +278,8 @@ async def stop(ctx):
     if voice and voice.is_playing():
         voice.stop()
         songs.clear()
-        
+        await ctx.send("**🛑 Stopped**")
+
 @client.command()
 async def dc(ctx):
     if str(ctx.channel) != "「🎼」music-1":
@@ -288,7 +289,8 @@ async def dc(ctx):
         voice.stop()
         songs.clear()
         await voice.disconnect()
-        
+        await ctx.send("**🚫 Disconnect**")
+
 @client.command()
 async def pause(ctx):
     if str(ctx.channel) != "「🎼」music-1":
@@ -296,7 +298,8 @@ async def pause(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice and voice.is_playing():
         voice.pause()
-            
+        await ctx.send("**⏸️ Paused**")  
+
 @client.command()
 async def resume(ctx):
     if str(ctx.channel) != "「🎼」music-1":
@@ -304,15 +307,6 @@ async def resume(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice and voice.is_paused():
         voice.resume()
+        await ctx.send("**▶️ Resumed**")
 
-@client.command()                          
-async def volume(ctx, volume: float):                   
-    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)  
-
-    if 0 <= volume <= 100:                              
-        if voice.is_playing():                          
-            new_volume = volume / 100                   
-            voice.source.volume = new_volume            
-            await ctx.reply(f"Volume: {volume}")
-      
 client.run("ODQ4NTQ5NDAxNTMzNjEyMDYy.YLOPNg.-ReUjCsZGnJV8he1trdDeT1AoAI")
