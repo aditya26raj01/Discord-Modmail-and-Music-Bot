@@ -231,7 +231,7 @@ def next_song(ctx):
         voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
         FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
         voice.play(discord.FFmpegPCMAudio(url, **FFMPEG_OPTIONS),after = lambda e: next_song(ctx))
-        songs.pop(0)
+        songs.pop(title)
     except:
         pass
 
