@@ -307,7 +307,7 @@ async def resume(ctx):
 
 @client.command()                          
 async def volume(ctx, volume: float):                   
-    voice = diacord.utils.get(client.voice_clients, guild=ctx.guild)  
+    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)  
 
     if 0 <= volume <= 100:                              
         if voice.is_playing():                          
