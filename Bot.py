@@ -221,55 +221,58 @@ async def cleardm(ctx,id,has_role="Admin"):
 
 #---------------------------------------------------------------------------------
 
-def next_song(ctx):
-    try:
-        for title, url in songs.items():
-            title=title
-            url=url
-            break
-        voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+def audio_finder(song_name):
+    videosSearch = VideosSearch(song_name , limit = 1)
+    link=videosSearch.result()['result'][0]['link']
+            
+    ydl_opts = {'format': 'bestaudio','quiet': True}
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(link, download=False)
+    
+    URL = info['formats'][0]['url']
+    title = videosSearch.result()['result'][0]['title']
+    return URL, title;
+
+songs=[]
+
+def audio_player(voice):
+    if len(songs) >0:    
         FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
-        voice.play(discord.FFmpegPCMAudio(url, **FFMPEG_OPTIONS),after = lambda e: next_song(ctx))
-        songs.pop(title)
-    except:
-        pass
+        voice.play(discord.FFmpegPCMAudio(songs[0], **FFMPEG_OPTIONS), after = lambda e: audio_player(voice))
+        songs.pop(0)
 
-
-songs={}
 @client.command()
 async def play(ctx,*,song_name : str):
+    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+    if not voice:
+        voiceChannel = discord.utils.get(ctx.guild.voice_channels, name='「🎵」Music')
+        await voiceChannel.connect()
+        voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+
+    url , title = audio_finder(song_name)
+    
+    if not voice.is_playing():
+        FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+        voice.play(discord.FFmpegPCMAudio(url, **FFMPEG_OPTIONS), after = lambda e: audio_player(voice))
+        await ctx.send(f"🎶Playing **{title}**")
+    else:
+        songs.append(url)
+        await ctx.send(f"Added to Queue **{title}**")
+        
+@client.command()
+async def skip(ctx):
     if str(ctx.channel) != "「🎼」music-1":
         return
-    if ctx.author.voice and str(ctx.author.voice.channel) == "「🎵」Music":
-        voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-        if not voice:
-            voiceChannel = discord.utils.get(ctx.guild.voice_channels, name='「🎵」Music')
-            await voiceChannel.connect()
-            voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-
-        await ctx.send(f"🔎Searching for **{song_name}**")
+    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+    if voice.is_playing():
         
-        videosSearch = VideosSearch(song_name+" lyrics", limit = 1)
-        link=videosSearch.result()['result'][0]['link']
-            
-        ydl_opts = {'format': 'bestaudio'}
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(link, download=False)
-        URL = info['formats'][0]['url']
-        title = videosSearch.result()['result'][0]['title']
-        
-        if not voice.is_playing():
-            FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
-            voice.play(discord.FFmpegPCMAudio(URL, **FFMPEG_OPTIONS), after = lambda e: next_song(ctx))
-            await ctx.send(f"🎶Playing **{title}**")
+        if len(songs)>0:
+            voice.pause()
+            audio_player(voice)
+            await ctx.send("⏭ **Skipped**")
         else:
-            songs[title] = URL
-            await ctx.send(f"Added to Queue **{title}**")
-
-    else:
-        await ctx.send("Please connect to **「🎵」Music** to play music, then try again.")
-
-
+            await ctx.send("Queue is empty")
+    
 @client.command()
 async def stop(ctx):
     if str(ctx.channel) != "「🎼」music-1":
@@ -308,5 +311,5 @@ async def resume(ctx):
     if voice and voice.is_paused():
         voice.resume()
         await ctx.send("**▶️ Resumed**")
-
+        
 client.run("ODQ4NTQ5NDAxNTMzNjEyMDYy.YLOPNg.-ReUjCsZGnJV8he1trdDeT1AoAI")
