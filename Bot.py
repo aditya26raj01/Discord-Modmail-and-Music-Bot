@@ -248,7 +248,7 @@ async def play(ctx,*,song_name : str):
         voiceChannel = discord.utils.get(ctx.guild.voice_channels, name='「🎵」Music')
         await voiceChannel.connect()
         voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-
+    await ctx.send(f"🔎Searching for **{song_name}**")
     url , title = audio_finder(song_name)
     
     if not voice.is_playing():
