@@ -244,6 +244,7 @@ def audio_player(voice):
 @client.command()
 async def play(ctx,*,song_name : str):
     if str(ctx.channel) != "「🎼」magma":
+        await ctx.send("All <@848549401533612062> Music Commands only in <#843144274395529236>.")
         return
     if ctx.author.voice and str(ctx.author.voice.channel) == "「🎵」MaGma":
         voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
@@ -267,6 +268,7 @@ async def play(ctx,*,song_name : str):
 @client.command()
 async def skip(ctx):
     if str(ctx.channel) != "「🎼」magma":
+        await ctx.send("All <@848549401533612062> Music Commands only in <#843144274395529236>.")
         return
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice.is_playing():
@@ -281,6 +283,7 @@ async def skip(ctx):
 @client.command()
 async def stop(ctx):
     if str(ctx.channel) != "「🎼」magma":
+        await ctx.send("All <@848549401533612062> Music Commands only in <#843144274395529236>.")
         return
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice and voice.is_playing():
@@ -291,6 +294,7 @@ async def stop(ctx):
 @client.command()
 async def dc(ctx):
     if str(ctx.channel) != "「🎼」magma":
+        await ctx.send("All <@848549401533612062> Music Commands only in <#843144274395529236>.")
         return
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice and voice.is_connected():
@@ -302,6 +306,7 @@ async def dc(ctx):
 @client.command()
 async def pause(ctx):
     if str(ctx.channel) != "「🎼」magma":
+        await ctx.send("All <@848549401533612062> Music Commands only in <#843144274395529236>.")
         return
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice and voice.is_playing():
@@ -311,6 +316,7 @@ async def pause(ctx):
 @client.command()
 async def resume(ctx):
     if str(ctx.channel) != "「🎼」magma":
+        await ctx.send("All <@848549401533612062> Music Commands only in <#843144274395529236>.")
         return
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice and voice.is_paused():
@@ -320,6 +326,7 @@ async def resume(ctx):
 @client.command()                          
 async def volume(ctx, volume: float):
     if str(ctx.channel) != "「🎼」magma":
+        await ctx.send("All <@848549401533612062> Music Commands only in <#843144274395529236>.")
         return                   
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)  
 
