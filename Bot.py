@@ -301,7 +301,7 @@ async def dc(ctx):
         voice.stop()
         songs.clear()
         await voice.disconnect()
-        await ctx.send("**🚫 Disconnected**")
+        await ctx.send("**📬 Disconnected**")
 
 @client.command()
 async def pause(ctx):
@@ -322,30 +322,5 @@ async def resume(ctx):
     if voice and voice.is_paused():
         voice.resume()
         await ctx.send("**▶️ Resumed**")
-
-@client.command()
-async def voice_connect(message):
-    if message.author == client.user:
-        return
-
-    channel = message.author.voice.channel
-    voice = discord.utils.get(client.voice_clients, guild=message.guild)
-
-    if voice and voice.is_connected():
-        return voice, voice.source
-    else:
-        voice = await channel.connect()
-        voice.source = discord.PCMVolumeTransformer(voice.source, volume=1.0)
-
-    return voice, voice.source
-
-@client.command()
-async def volume(message, vol : float):
-    voice, voice.source = await voice_connect(message)
-    if 0 <= vol <= 100:
-        vol = vol / 100
-        voice.source.volume = vol
-    else:
-        await message.channel.send('Please enter a volume between 0 and 100')
 
 client.run("ODQ4NTQ5NDAxNTMzNjEyMDYy.YLOPNg.-ReUjCsZGnJV8he1trdDeT1AoAI")
