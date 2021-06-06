@@ -323,17 +323,31 @@ async def resume(ctx):
         voice.resume()
         await ctx.send("**▶️ Resumed**")
 
-@client.command()                          
-async def volume(ctx, volume: float):
-    if str(ctx.channel) != "「🎼」magma":
-        await ctx.send("All <@848549401533612062> Music Commands only in <#843144274395529236>.")
-        return                   
-    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)  
+@client.command()
+async def voice_connect(message):
+    if message.author == bot.user:
+        return
 
-    if 0 <= volume <= 100:                              
-        if voice.is_playing():                          
-            new_volume = volume / 100                   
-            voice.source.volume = new_volume            
-            await ctx.send(f"Volume: {volume}")
+    channel = message.author.voice.channel
+    voice = get(bot.voice_clients, guild=message.guild)
+
+    if voice and voice.is_connected():
+        return voice, voice.source
+    else:
+        voice = await channel.connect()
+        voice.source = discord.PCMVolumeTransformer(voice.source, volume=1.0)
+
+    return voice, voice.source
+
+@client.command()
+async def volume(message, vol : int):
+    if message.content.lower().startswith('volume '):
+        new_volume = float(message.content.strip('volume '))
+        voice, voice.source = await voice_connect(message)
+        if 0 <= new_volume <= 100:
+            new_volume = new_volume / 100
+            voice.source.volume = new_volume
+        else:
+            await message.channel.send('Please enter a volume between 0 and 100')
 
 client.run("ODQ4NTQ5NDAxNTMzNjEyMDYy.YLOPNg.-ReUjCsZGnJV8he1trdDeT1AoAI")
