@@ -325,7 +325,7 @@ async def resume(ctx):
 
 @client.command()
 async def voice_connect(message):
-    if message.author == bot.user:
+    if message.author == client.user:
         return
 
     channel = message.author.voice.channel
