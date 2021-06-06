@@ -329,7 +329,7 @@ async def voice_connect(message):
         return
 
     channel = message.author.voice.channel
-    voice = get(bot.voice_clients, guild=message.guild)
+    voice = discord.utils.get(client.voice_clients, guild=message.guild)
 
     if voice and voice.is_connected():
         return voice, voice.source
