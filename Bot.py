@@ -340,14 +340,12 @@ async def voice_connect(message):
     return voice, voice.source
 
 @client.command()
-async def volume(message, vol : int):
-    if message.content.lower().startswith('volume '):
-        new_volume = float(message.content.strip('volume '))
-        voice, voice.source = await voice_connect(message)
-        if 0 <= new_volume <= 100:
-            new_volume = new_volume / 100
-            voice.source.volume = new_volume
-        else:
-            await message.channel.send('Please enter a volume between 0 and 100')
+async def volume(message, vol : float):
+    voice, voice.source = await voice_connect(message)
+    if 0 <= vol <= 100:
+        vol = vol / 100
+        voice.source.volume = vol
+    else:
+        await message.channel.send('Please enter a volume between 0 and 100')
 
 client.run("ODQ4NTQ5NDAxNTMzNjEyMDYy.YLOPNg.-ReUjCsZGnJV8he1trdDeT1AoAI")
