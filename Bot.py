@@ -222,15 +222,11 @@ async def cleardm(ctx,id,has_role="Admin"):
 #---------------------------------------------------------------------------------
 
 def audio_finder(song_name):
-    videosSearch = VideosSearch(song_name , limit = 2)
-    link=videosSearch.result()['result'][0]['link']
-            
-    ydl_opts = {'format': 'bestaudio','quiet': True}
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(link, download=False)
+    results = YoutubeSearch(song_name, max_results=5).to_dict()
     
-    URL = info['formats'][0]['url']
-    title = videosSearch.result()['result'][0]['title']
+    URL = "https://www.youtube.com/"+results[0]['url_suffix']
+    print(results)
+    title = results[0]['title']
     return URL, title;
 
 songs=[]
