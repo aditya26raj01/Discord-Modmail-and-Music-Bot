@@ -221,7 +221,7 @@ async def cleardm(ctx,id,has_role="Admin"):
 #---------------------------------------------------------------------------------
 
 def audio_finder(song_name):
-    videosSearch = VideosSearch(song_name , limit = 2)
+    videosSearch = VideosSearch(song_name + "audio" , limit = 2)
     link=videosSearch.result()['result'][0]['link']
             
     ydl_opts = {'format': 'bestaudio/best',
