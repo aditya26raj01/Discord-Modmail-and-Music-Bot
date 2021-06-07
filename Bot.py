@@ -223,8 +223,7 @@ async def cleardm(ctx,id,has_role="Admin"):
 def audio_finder(song_name):
     results = YoutubeSearch(song_name, max_results=5).to_dict()
     
-    URL = "https://www.youtube.com/"+results[0]['url_suffix']
-    print(results)
+    URL = "https://www.youtube.com"+results[0]['url_suffix']
     title = results[0]['title']
     return URL, title;
 
