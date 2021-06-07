@@ -2,8 +2,7 @@ import discord
 from discord.ext import commands
 import asyncio
 import datetime
-import youtube_dl
-from youtubesearchpython import VideosSearch
+from youtube_search import YoutubeSearch
 client=commands.Bot(command_prefix="+",intents=discord.Intents.all())
 
 @client.event
