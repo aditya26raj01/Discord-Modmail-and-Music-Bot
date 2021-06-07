@@ -1,6 +1,5 @@
 discord
 ffmpeg
-youtube-dl
+youtube_search
 discord.py[voice]
 PyNaCl
-youtube-search-python
