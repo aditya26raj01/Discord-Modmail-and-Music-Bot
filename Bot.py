@@ -2,7 +2,8 @@ import discord
 from discord.ext import commands
 import asyncio
 import datetime
-from youtube_search import YoutubeSearch
+import youtube_dl
+from youtubesearchpython import VideosSearch
 client=commands.Bot(command_prefix="+",intents=discord.Intents.all())
 
 @client.event
@@ -61,7 +62,6 @@ async def on_message(message):
         embed=discord.Embed(
             title="Confirm Thread Creation",
             description='''This system is meant for directly contacting the server Moderators. Confirming a thread without a valid reason will not be tolerated at all.
-
 React to confirm a thread.''',
             color=0x03bafc)
         msg=await message.channel.send(embed=embed)
@@ -221,10 +221,15 @@ async def cleardm(ctx,id,has_role="Admin"):
 #---------------------------------------------------------------------------------
 
 def audio_finder(song_name):
-    results = YoutubeSearch(song_name, max_results=5).to_dict()
+    videosSearch = VideosSearch(song_name , limit = 2)
+    link=videosSearch.result()['result'][0]['link']
+            
+    ydl_opts = {'format': 'bestaudio','quiet': True}
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(link, download=False)
     
-    URL = "https://www.youtube.com"+results[0]['url_suffix']
-    title = results[0]['title']
+    URL = info['formats'][0]['url']
+    title = videosSearch.result()['result'][0]['title']
     return URL, title;
 
 songs=[]
@@ -247,16 +252,18 @@ async def play(ctx,*,song_name : str):
             await voiceChannel.connect()
             voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
         await ctx.send(f"🔎Searching for **{song_name}**")
-       
-        url , title = audio_finder(song_name)
-        if not voice.is_playing():
-            FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
-            voice.play(discord.FFmpegPCMAudio(url, **FFMPEG_OPTIONS), after = lambda e: audio_player(voice))
-            await ctx.send(f"🎶Playing **{title}**")
-        else:
-            songs.append(url)
-            await ctx.send(f"Added to Queue **{title}**")
-                
+        try:
+            url , title = audio_finder(song_name)
+            if not voice.is_playing():
+                FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+                voice.play(discord.FFmpegPCMAudio(url, **FFMPEG_OPTIONS), after = lambda e: audio_player(voice))
+                await ctx.send(f"🎶Playing **{title}**")
+            else:
+                songs.append(url)
+                await ctx.send(f"Added to Queue **{title}**")
+        except:
+            await ctx.send("An error occured! Try again!")
+        
     else:
         await ctx.send("Please connect to **「🎵」MaGma** to play music, then try again.")
         
