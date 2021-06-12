@@ -313,7 +313,7 @@ async def play(ctx,*,song_name : str):
 ```View Count:``` {views}
 ```Channel:``` {channel}
 ```Requested By:``` {author}
-```Position in Queue:``` len(songs)'''
+```Position in Queue:``` len(songs)''',
                     color = 0x4287f5   
                 )
                 embed.set_thumbnail(url=thumbnail)
