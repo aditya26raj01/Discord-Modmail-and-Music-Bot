@@ -234,7 +234,9 @@ def audio_finder(song_name):
     'quiet': True,
     'no_warnings': True,
     'default_search': 'auto',
-    'source_address': '0.0.0.0'}
+    'source_address': '0.0.0.0',
+    'skip_download': True,
+    'extract_flat': False}
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(link, download=False)
     
