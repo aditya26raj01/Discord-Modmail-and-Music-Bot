@@ -294,28 +294,28 @@ async def play(ctx,*,song_name : str):
                 audio_player(voice)
 
                 embed=discord.Embed(
-                    title = title, url=link,
-                    color = 0x32db3e   
+                    title = "Added To Queue",
+                    description = f'''[{title}](link)/n
+```Duration:``` {duration}
+```View Count:``` {views}
+```Channel:``` {channel}
+```Requested By:``` {author}''',
+                    color = 0x42c736
                 )
-                embed.set_author(name="Now Playing")
-                embed.add_field(name = "Channel", value = channel)
-                embed.add_field(name="Song Duration", value=duration)
-                embed.add_field(name="View Count", value=views)
-                embed.add_field(name="Requested By", value=ctx.author)
                 embed.set_thumbnail(url=thumbnail)
                 await ctx.send(embed=embed)
             else:
                 
                 embed=discord.Embed(
-                    title = title, url=link,
+                    title = "Added To Queue",
+                    description = f'''[{title}](link)/n
+```Duration:``` {duration}
+```View Count:``` {views}
+```Channel:``` {channel}
+```Requested By:``` {author}
+```Position in Queue:``` len(songs)'''
                     color = 0x4287f5   
                 )
-                embed.set_author(name="Added To Queue")
-                embed.add_field(name = "Channel", value = channel)
-                embed.add_field(name="Song Duration", value=duration)
-                embed.add_field(name="View Count", value=views)
-                embed.add_field(name="Requested By", value=ctx.author)
-                embed.add_field(name="Position in Queue", value=len(songs))
                 embed.set_thumbnail(url=thumbnail)
                 await ctx.send(embed=embed)
         except:
