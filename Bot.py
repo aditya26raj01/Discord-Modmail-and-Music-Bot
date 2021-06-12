@@ -219,10 +219,10 @@ async def cleardm(ctx,id,has_role="Admin"):
     await ctx.channel.send("Done")
 
 #---------------------------------------------------------------------------------
-
 def audio_finder(song_name):
-    videosSearch = VideosSearch(song_name + "audio" , limit = 2)
+    videosSearch = VideosSearch(song_name , limit = 2)
     link=videosSearch.result()['result'][0]['link']
+    
             
     ydl_opts = {'format': 'bestaudio/best',
     'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
@@ -240,17 +240,37 @@ def audio_finder(song_name):
     
     URL = info['formats'][0]['url']
     title = videosSearch.result()['result'][0]['title']
-    return URL, title;
+    duration = videosSearch.result()['result'][0]['duration']
+
+    views = videosSearch.result()['result'][0]['viewCount']["short"]
+    thumbnail = videosSearch.result()['result'][0]['thumbnails'][0]["url"]
+    channel = videosSearch.result()['result'][0]['channel']["name"]
+
+    return URL, title, duration, views, thumbnail, channel, link;
 
 songs=[]
 
 def audio_player(voice):
     if len(songs) >0:    
         FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
-        voice.play(discord.FFmpegPCMAudio(songs[0], **FFMPEG_OPTIONS), after = lambda e: audio_player(voice))
-        songs.pop(0)
+        voice.play(discord.FFmpegPCMAudio(songs[0]["url"], **FFMPEG_OPTIONS), after = lambda e: audio_player(voice))
+    
+        # embed=discord.Embed(
+        #     title = songs[0]["title"],
+        #     color = 0x32db3e   
+        # )
+        # embed.set_author(name="Now Playing")
+        # embed.add_field(name = "Channel", value = songs[0]["channel"])
+        # embed.add_field(name="Song Duration", value=songs[0]["duration"])
+        # embed.add_field(name="View Count", value=songs[0]["views"])
+        # embed.add_field(name="Requested By", value=songs[0]["author"])
+        # embed.set_thumbnail(url=songs[0]["thumbnail"])
+        # client.loop.create_task(songs[0]["send"].send(embed=embed))
+        global current
+        current = songs.pop(0)
 
-@client.command()
+        
+@client.command(aliases=["p"])
 async def play(ctx,*,song_name : str):
     if str(ctx.channel) != "「🎼」magma":
         await ctx.send("All <@848549401533612062> Music Commands only in <#843144274395529236>.")
@@ -263,21 +283,76 @@ async def play(ctx,*,song_name : str):
             voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
         await ctx.send(f"🔎Searching for **{song_name}**")
         try:
-            url , title = audio_finder(song_name)
+
+            url , title, duration, views, thumbnail, channel, link = audio_finder(song_name)
+            song_detail={"url":url,"title":title,"duration":duration,"views":views,"thumbnail":thumbnail,"channel":channel,"send":ctx.channel,"author":ctx.author,"link":link}
+            songs.append(song_detail)
+
             if not voice.is_playing():
-                FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
-                voice.play(discord.FFmpegPCMAudio(url, **FFMPEG_OPTIONS), after = lambda e: audio_player(voice))
-                await ctx.send(f"🎶Playing **{title}**")
+                audio_player(voice)
+
+                embed=discord.Embed(
+                    title = title, url=link,
+                    color = 0x32db3e   
+                )
+                embed.set_author(name="Now Playing")
+                embed.add_field(name = "Channel", value = channel)
+                embed.add_field(name="Song Duration", value=duration)
+                embed.add_field(name="View Count", value=views)
+                embed.add_field(name="Requested By", value=ctx.author)
+                embed.set_thumbnail(url=thumbnail)
+                await ctx.send(embed=embed)
             else:
-                songs.append(url)
-                await ctx.send(f"Added to Queue **{title}**")
+                
+                embed=discord.Embed(
+                    title = title, url=link,
+                    color = 0x4287f5   
+                )
+                embed.set_author(name="Added To Queue")
+                embed.add_field(name = "Channel", value = channel)
+                embed.add_field(name="Song Duration", value=duration)
+                embed.add_field(name="View Count", value=views)
+                embed.add_field(name="Requested By", value=ctx.author)
+                embed.add_field(name="Position in Queue", value=len(songs))
+                embed.set_thumbnail(url=thumbnail)
+                await ctx.send(embed=embed)
         except:
             await ctx.send("An error occured! Try again!")
         
     else:
         await ctx.send("Please connect to **「🎵」MaGma** to play music, then try again.")
-        
-@client.command()
+
+@client.command(aliases=["q"])
+async def queue(ctx):
+    if str(ctx.channel) != "「🎼」magma":
+        await ctx.send("All <@848549401533612062> Music Commands only in <#843144274395529236>.")
+        return
+    
+    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+
+    y=""
+    if len(songs)>0:
+        for i in range(1,len(songs)+1):
+            x =f'''``{i}.`` [{songs[i-1]["title"]}]({songs[i-1]["link"]})\nDuration: {songs[i-1]["duration"]} **|** Requested By: {songs[i-1]["author"]}\n\n'''
+            y=y+x
+    else:
+        y='''``None``'''
+    try:
+        current
+        embed=discord.Embed(
+            title="Queue",
+            color = 0xFFFF00,
+            description= f'''**__Now Playing:__**
+[{current["title"]}]({current["link"]})\nDuration: {current["duration"]} **|** Requested By: {current["author"]}\n
+**__Upcoming:__**
+{y}''')
+        await ctx.send(embed=embed)
+    except:
+        await ctx.send("No Song is being Played.")
+
+
+
+@client.command(aliases=["s"])
 async def skip(ctx):
     if str(ctx.channel) != "「🎼」magma":
         await ctx.send("All <@848549401533612062> Music Commands only in <#843144274395529236>.")
@@ -303,8 +378,8 @@ async def stop(ctx):
         songs.clear()
         await ctx.send("**🛑 Stopped**")
 
-@client.command()
-async def dc(ctx):
+@client.command(aliases=["dc","leave"])
+async def disconnect(ctx):
     if str(ctx.channel) != "「🎼」magma":
         await ctx.send("All <@848549401533612062> Music Commands only in <#843144274395529236>.")
         return
@@ -334,5 +409,5 @@ async def resume(ctx):
     if voice and voice.is_paused():
         voice.resume()
         await ctx.send("**▶️ Resumed**")
-
+        
 client.run("ODQ4NTQ5NDAxNTMzNjEyMDYy.YLOPNg.-ReUjCsZGnJV8he1trdDeT1AoAI")
