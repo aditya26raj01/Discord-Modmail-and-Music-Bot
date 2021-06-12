@@ -324,33 +324,33 @@ async def play(ctx,*,song_name : str):
     else:
         await ctx.send("Please connect to **「🎵」MaGma** to play music, then try again.")
 
-@client.command(aliases=["q"])
-async def queue(ctx):
-    if str(ctx.channel) != "「🎼」magma":
-        await ctx.send("All <@848549401533612062> Music Commands only in <#843144274395529236>.")
-        return
+# @client.command(aliases=["q"])
+# async def queue(ctx):
+#     if str(ctx.channel) != "「🎼」magma":
+#         await ctx.send("All <@848549401533612062> Music Commands only in <#843144274395529236>.")
+#         return
     
-    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+#     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
 
-    y=""
-    if len(songs)>0:
-        for i in range(1,len(songs)+1):
-            x =f'''``{i}.`` [{songs[i-1]["title"]}]({songs[i-1]["link"]})\nDuration: {songs[i-1]["duration"]} **|** Requested By: {songs[i-1]["author"]}\n\n'''
-            y=y+x
-    else:
-        y='''``None``'''
-    try:
-        current
-        embed=discord.Embed(
-            title="Queue",
-            color = 0xFFFF00,
-            description= f'''**__Now Playing:__**
-[{current["title"]}]({current["link"]})\nDuration: {current["duration"]} **|** Requested By: {current["author"]}\n
-**__Upcoming:__**
-{y}''')
-        await ctx.send(embed=embed)
-    except:
-        await ctx.send("No Song is being Played.")
+#     y=""
+#     if len(songs)>0:
+#         for i in range(1,len(songs)+1):
+#             x =f'''``{i}.`` [{songs[i-1]["title"]}]({songs[i-1]["link"]})\nDuration: {songs[i-1]["duration"]} **|** Requested By: {songs[i-1]["author"]}\n\n'''
+#             y=y+x
+#     else:
+#         y='''``None``'''
+#     try:
+#         current
+#         embed=discord.Embed(
+#             title="Queue",
+#             color = 0xFFFF00,
+#             description= f'''**__Now Playing:__**
+# [{current["title"]}]({current["link"]})\nDuration: {current["duration"]} **|** Requested By: {current["author"]}\n
+# **__Upcoming:__**
+# {y}''')
+#         await ctx.send(embed=embed)
+#     except:
+#         await ctx.send("No Song is being Played.")
 
 
 
