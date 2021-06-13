@@ -298,7 +298,7 @@ async def queue(ctx):
     y=""
     if len(songs)>0:
         for i in range(1,len(songs)+1):
-            x =f'''``{i}.`` [{songs[i-1]["title"]}]({songs[i-1]["link"]})\nDuration: {songs[i-1]["duration"]} **|** Requested By: {songs[i-1]["author"]}\n\n'''
+            x =f'''`{i}.` [{songs[i-1]["title"]}]({songs[i-1]["link"]})\nDuration: {songs[i-1]["duration"]} **|** Requested By: {songs[i-1]["author"]}\n\n'''
             y=y+x
         embed=discord.Embed(
             title="Upcoming Songs",
