@@ -289,6 +289,20 @@ async def play(ctx,*,song_name : str):
     else:
         await ctx.send("Please connect to **「🎵」MaGma** to play music, then try again.")
 
+@client.command(aliases=["rm"])
+async def remove(ctx, song : str):
+    if str(ctx.channel) != "「🎼」magma":
+        await ctx.send("All <@848549401533612062> Music Commands only in <#843144274395529236>.")
+        return
+    if ctx.author.voice and str(ctx.author.voice.channel) == "「🎵」MaGma":
+        if len(songs)>=int(song):
+            delted = songs.pop(int(song)-1)
+            await ctx.send(f'''`{delted["title"]}` has been removed from Queue.''')
+        else:
+            await ctx.send("Song doesnt exist.")
+    else:
+        await ctx.send("Please connect to **「🎵」MaGma** to play music, then try again.")
+
 @client.command(aliases=["q"])
 async def queue(ctx):
     if str(ctx.channel) != "「🎼」magma":
