@@ -2,3 +2,4 @@ discord
 discord.py[voice]
 PyNaCl
 youtube-search-python
+youtube_dl
