@@ -225,7 +225,7 @@ def audio_finder(song_name):
     link=videosSearch.result()['result'][0]['link']
     
             
-    ydl_opts = {'format': 'bestaudio/best',"quiet":True}
+    ydl_opts = {'format': 'bestaudio/best',"quiet":True, "geo-bypass":True,"no-playlist":True,"flat-playlist":True}
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(link, download=False)
     
