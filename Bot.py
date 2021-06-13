@@ -255,35 +255,35 @@ async def play(ctx,*,song_name : str):
             await voiceChannel.connect()
             voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
         await ctx.send(f"🔎Searching for **{song_name}**")
-        try:
+        #try:
 
-            url , title, duration, views, thumbnail, channel, link = audio_finder(song_name)
-            song_detail={"url":url,"title":title,"duration":duration,"views":views,"thumbnail":thumbnail,"channel":channel,"send":ctx.channel,"author":ctx.author,"link":link}
-            songs.append(song_detail)
+        url , title, duration, views, thumbnail, channel, link = audio_finder(song_name)
+        song_detail={"url":url,"title":title,"duration":duration,"views":views,"thumbnail":thumbnail,"channel":channel,"send":ctx.channel,"author":ctx.author,"link":link}
+        songs.append(song_detail)
 
-            if not voice.is_playing():
-                audio_player(voice)
+        if not voice.is_playing():
+            audio_player(voice)
 
-                embed=discord.Embed(
-                    title = "Now Playing",
-                    description=f'''[{title}]({link})\n
+            embed=discord.Embed(
+                title = "Now Playing",
+                description=f'''[{title}]({link})\n
 `Duration:` {duration}\n\n`Requested By:` {ctx.author}''',
-                    color = 0x32db3e   
-                )
-                embed.set_thumbnail(url=thumbnail)
-                await ctx.send(embed=embed)
-            else:
+                color = 0x32db3e   
+            )
+            embed.set_thumbnail(url=thumbnail)
+            await ctx.send(embed=embed)
+        else:
                 
-                embed=discord.Embed(
+            embed=discord.Embed(
                     title = "Added To Queue",
                     description=f'''[{title}]({link})\n
 `Duration:` {duration}\n\n`Requested By:` {ctx.author}\n\n`Position in Queue:` {len(songs)}''',
                     color = 0x4287f5   
                 )
-                embed.set_thumbnail(url=thumbnail)
-                await ctx.send(embed=embed)
-        except:
-            await ctx.send("An error occured! Try again!")
+            embed.set_thumbnail(url=thumbnail)
+            await ctx.send(embed=embed)
+        #except:
+        #    await ctx.send("An error occured! Try again!")
         
     else:
         await ctx.send("Please connect to **「🎵」MaGma** to play music, then try again.")
