@@ -1,5 +1,3 @@
-from ast import alias
-from dis import disco
 import discord
 from discord.ext import commands
 import youtube_dl
@@ -27,11 +25,13 @@ def audio_finder(song_name):
     return URL, title, duration, thumbnail, link
 
 
+
+
 def audio_player(voice):
     if len(songs) >0:    
         FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
         voice.play(discord.FFmpegPCMAudio(songs[0]["url"], **FFMPEG_OPTIONS), after = lambda e: audio_player(voice))
-        global nP
+        global nP 
         nP = songs.pop(0)
 
 songs = []
@@ -107,6 +107,7 @@ async def stop(ctx):
         songs.clear()
         await ctx.send("**🛑 Stopped**")
 
+
 @client.command(aliases=["dc","leave"])
 async def disconnect(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
@@ -115,6 +116,7 @@ async def disconnect(ctx):
         songs.clear()
         await voice.disconnect()
         await ctx.send("**📬 Disconnected**")
+
 
 @client.command()
 async def pause(ctx):
@@ -141,5 +143,5 @@ async def nowplaying(ctx):
         await ctx.send(embed=embed)
     except:
         await ctx.send("⛔ No song is currently Playing.")
-        
+
 client.run("ODQ4NTQ5NDAxNTMzNjEyMDYy.YLOPNg.-ReUjCsZGnJV8he1trdDeT1AoAI")
