@@ -146,4 +146,11 @@ async def nowplaying(ctx):
     except:
         await ctx.send("⛔ No song is currently Playing.")
 
+@client.command(aliases=["j"])
+async def join(ctx):
+    channel = ctx.author.voice.channel
+    voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
+    if not voice:
+        await channel.connect()
+        
 client.run("ODQ4NTQ5NDAxNTMzNjEyMDYy.YLOPNg.-ReUjCsZGnJV8he1trdDeT1AoAI")
