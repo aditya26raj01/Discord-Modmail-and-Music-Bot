@@ -40,7 +40,9 @@ async def play(ctx,*,song_name : str):
     if not voice:
         await channel.connect()
         voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-
+    
+    await ctx.send(f"🔎Searching for **{song_name}**")
+    
     url , title, duration, thumbnail, link = audio_finder(song_name)
 
     song_detail={"url":url,"title":title,"duration":duration,"thumbnail":thumbnail,"send":ctx.channel,"author":ctx.author,"link":link}
@@ -102,7 +104,7 @@ async def stop(ctx):
     if voice and voice.is_playing():
         voice.stop()
         songs.clear()
-        await ctx.send("**🛑 Stopped**")
+        await ctx.send("**🛑 Stopped\nQueue has been Cleared!!**")
 
 @client.command(aliases=["dc","leave"])
 async def disconnect(ctx):
