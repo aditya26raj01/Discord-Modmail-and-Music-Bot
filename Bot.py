@@ -1,3 +1,5 @@
+from ast import alias
+from dis import disco
 import discord
 from discord.ext import commands
 import youtube_dl
@@ -29,7 +31,8 @@ def audio_player(voice):
     if len(songs) >0:    
         FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
         voice.play(discord.FFmpegPCMAudio(songs[0]["url"], **FFMPEG_OPTIONS), after = lambda e: audio_player(voice))
-        songs.pop(0)
+        global nP
+        nP = songs.pop(0)
 
 songs = []
 
@@ -40,9 +43,7 @@ async def play(ctx,*,song_name : str):
     if not voice:
         await channel.connect()
         voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-    
-    await ctx.send(f"🔎Searching for **{song_name}**")
-    
+
     url , title, duration, thumbnail, link = audio_finder(song_name)
 
     song_detail={"url":url,"title":title,"duration":duration,"thumbnail":thumbnail,"send":ctx.channel,"author":ctx.author,"link":link}
@@ -88,7 +89,7 @@ async def skip(ctx):
             audio_player(voice)
             await ctx.send("⏭ **Skipped**")
         else:
-            await ctx.send("Queue is empty")
+            await ctx.send("Queue is Empty.")
 
 @client.command(aliases=["rm"])
 async def remove(ctx, song : str):
@@ -104,7 +105,7 @@ async def stop(ctx):
     if voice and voice.is_playing():
         voice.stop()
         songs.clear()
-        await ctx.send("**🛑 Stopped\nQueue has been Cleared!!**")
+        await ctx.send("**🛑 Stopped**")
 
 @client.command(aliases=["dc","leave"])
 async def disconnect(ctx):
@@ -129,4 +130,16 @@ async def resume(ctx):
         voice.resume()
         await ctx.send("**▶️ Resumed**")
 
+@client.command(aliases=["np"])
+async def nowplaying(ctx):
+    try:
+        hh =f'''[{nP["title"]}]({nP["link"]})\nDuration: {nP["duration"]} **|** Requested By: {nP["author"]}\n\n'''
+        embed=discord.Embed(
+                title="Now Playing",
+                color = 0xFFFF00,
+                description= f"🎶 {hh}")
+        await ctx.send(embed=embed)
+    except:
+        await ctx.send("⛔ No song is currently Playing.")
+        
 client.run("ODQ4NTQ5NDAxNTMzNjEyMDYy.YLOPNg.-ReUjCsZGnJV8he1trdDeT1AoAI")
