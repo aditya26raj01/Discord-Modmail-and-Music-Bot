@@ -191,7 +191,10 @@ def audio_finder(song_name):
     link=videosSearch.result()['result'][0]['link']
     
             
-    ydl_opts = {'format': 'bestaudio/best',"quiet":True, "geo-bypass":True,"no-playlist":True,"flat-playlist":True}
+    #ydl_opts = {'format': 'bestaudio/best',"quiet":True, "geo-bypass":True,"no-playlist":True,"flat-playlist":True}
+    ydl_opts = {'format': 'bestaudio'}
+    FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(link, download=False)
     
@@ -203,7 +206,7 @@ def audio_finder(song_name):
 songs=[]
 def audio_player(voice):
     if len(songs) >0:    
-        FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+        #FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
         voice.play(discord.FFmpegPCMAudio(songs[0]["url"], **FFMPEG_OPTIONS), after = lambda e: audio_player(voice))
         songs.pop(0)
         
