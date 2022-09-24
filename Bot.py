@@ -11,8 +11,8 @@ async def on_ready():
     await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="DM Reports!"))
 sent_users={}
 empty_array=[]
-@client.event
-async def on_message(message):
+# @client.event
+# async def on_message(message):
 #     guild=client.get_guild(779532880959242250)        
     
 #     if message.author == client.user:
@@ -337,4 +337,4 @@ async def resume(ctx):
         voice.resume()
         await ctx.send("**▶️ Resumed**")
         
-client.run("MTAyMzI1NTE5NTYwNzYzODA0OA.GwLK9i.nHp4hLhjHnYm7vLu0JMowA4Hr-bz7FiJlcg-Mw")
+client.run("MTAyMzI1NTE5NTYwNzYzODA0OA.GontbL.TzJzlRBbs4cpYGzB_2eBUrk8eZrk1UzfQAR4vU")
