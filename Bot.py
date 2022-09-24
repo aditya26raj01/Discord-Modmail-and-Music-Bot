@@ -212,7 +212,7 @@ async def play(ctx,*,song_name : str):
     if str(ctx.channel) != "commands":
         await ctx.send("All Music Commands only in Commands channel only.")
         return
-    if ctx.author.voice and str(ctx.author.voice.channel) == "commands":
+    if ctx.author.voice and str(ctx.author.voice.channel) == "music":
         voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
         if not voice:
             voiceChannel = discord.utils.get(ctx.guild.voice_channels, name='music')
@@ -254,7 +254,7 @@ async def remove(ctx, song : str):
     if str(ctx.channel) != "commands":
         await ctx.send("All Music Commands only in Commands channel only.")
         return
-    if ctx.author.voice and str(ctx.author.voice.channel) == "commands":
+    if ctx.author.voice and str(ctx.author.voice.channel) == "music":
         if len(songs)>=int(song):
             delted = songs.pop(int(song)-1)
             await ctx.send(f'''`{delted["title"]}` has been removed from Queue.''')
