@@ -4,17 +4,19 @@ import asyncio
 import datetime
 import youtube_dl
 from youtubesearchpython import VideosSearch
-client=commands.Bot(command_prefix="+",intents=discord.Intents.all())
+client = commands.Bot(command_prefix="+", intents=discord.Intents.all())
+
+
 @client.event
 async def on_ready():
     print("Bot is Online")
-    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="DM Reports!"))
-sent_users={}
-empty_array=[]
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Music is ❤!"))
+sent_users = {}
+empty_array = []
 # @client.event
 # async def on_message(message):
-#     guild=client.get_guild(779532880959242250)        
-    
+#     guild=client.get_guild(779532880959242250)
+
 #     if message.author == client.user:
 #         return
 #     if message.guild and message.channel.id in sent_users.values() and not message.content.startswith("+"):
@@ -57,20 +59,20 @@ empty_array=[]
 #         await msg.add_reaction("❌")
 #         def check(reaction, user):
 #             return user == message.author and str(reaction.emoji) in ["✅","❌"]
-        
+
 #         try:
 #             reaction, user = await client.wait_for('reaction_add', timeout=10.0, check=check)
 #             await msg.remove_reaction("❌",client.user)
 #             await msg.remove_reaction("✅",client.user)
 #             if str(reaction.emoji)=="✅":
-                
+
 #                 embed=discord.Embed(
 #                     title="Ticket Opened",
 #                     color=0x42f542
 #                 )
 #                 embed.add_field(name="Created By :",value=message.author,inline=False)
 #                 channel = discord.utils.get(guild.channels, name="modmail-logs")
-#                 await channel.send(embed=embed) 
+#                 await channel.send(embed=embed)
 #                 category = discord.utils.get(guild.categories, name="modmail")
 #                 channel_name=(((str(message.author)).replace(" ","-")).replace("#","-")).lower()
 #                 modmail_channel=await guild.create_text_channel(channel_name, category=category)
@@ -84,11 +86,11 @@ empty_array=[]
 #                 for role in member.roles:
 #                     if role.name != "@everyone":
 #                         mention.append(role.mention)
-                    
+
 #                 b = ", ".join(mention)
 #                 embed.add_field(name="Nickname:",value=member.nick,inline=False)
 #                 embed.add_field(name="Roles:",value=b,inline=False)
-#                 embed.add_field(name="User ID:",value=message.author.id,inline=False)  
+#                 embed.add_field(name="User ID:",value=message.author.id,inline=False)
 #                 embed.set_thumbnail(url=member.avatar_url)
 #                 embed.set_footer(text=message.author)
 #                 embed.timestamp=datetime.datetime.utcnow()
@@ -105,7 +107,7 @@ empty_array=[]
 #                         embed.set_image(url=file.url)
 #                 await modmail_channel.send(embed=embed)
 #                 sent_users[message.author.id]=modmail_channel.id
-                
+
 #                 embed=discord.Embed(
 #                     title="Thread Created",
 #                     description="Thank you for your report! The moderation team will get back to you as soon as possible.",
@@ -121,11 +123,11 @@ empty_array=[]
 #                 embed.timestamp=datetime.datetime.utcnow()
 #                 await msg.delete()
 #                 await message.channel.send(embed=embed)
-                
+
 #         except asyncio.TimeoutError:
 #             await msg.delete()
 #             await message.channel.send("Timeout Error... Try Again!")
-            
+
 #     await client.process_commands(message)
 # @client.command()
 # async def close(ctx,*,reason="No Reason Provided!",has_role="Admin"):
@@ -140,19 +142,19 @@ empty_array=[]
 #     embed=discord.Embed(
 #         title="Ticket Closed",
 #         color=0xff3c00)
-        
+
 #     embed.add_field(name="Created By :",value=user,inline=False)
 #     embed.add_field(name="Closed By :",value=ctx.author,inline=False)
 #     channel = discord.utils.get(guild.channels, name="modmail-logs")
 #     await channel.send(embed=embed)
-    
+
 #     embed=discord.Embed(
 #         title="Thread Closed",
 #         description=f"{reason}",
 #         colour=0xff3c00)
 #     embed.set_footer(text="Replying will create a New Thread")
 #     embed.timestamp=datetime.datetime.utcnow()
-    
+
 #     user=await client.fetch_user(user_id)
 #     await user.send(embed=embed)
 #     await ctx.send(f"Mail with <@{user_id}> is closed now.")
@@ -167,9 +169,9 @@ empty_array=[]
 #     guild=client.get_guild(779532880959242250)
 #     category = discord.utils.get(guild.categories, name = "modmail")
 #     if category:
-#         await ctx.send("Setup Already Complete")    
+#         await ctx.send("Setup Already Complete")
 #         return
-    
+
 #     cat = await guild.create_category("modmail")
 #     await cat.set_permissions(guild.default_role, read_messages=False)
 #     category = discord.utils.get(guild.categories, name="modmail")
@@ -185,80 +187,90 @@ empty_array=[]
 #         await asyncio.sleep(0.5)
 #     await msg.delete()
 #     await ctx.channel.send("Done")
-#---------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------
+
+
 def audio_finder(song_name):
-    videosSearch = VideosSearch(song_name , limit = 2)
-    link=videosSearch.result()['result'][0]['link']
-    
-            
-    ydl_opts = {'format': 'bestaudio/best',"quiet":True, "geo-bypass":True,"no-playlist":True,"flat-playlist":True}
-    
+    videosSearch = VideosSearch(song_name, limit=2)
+    link = videosSearch.result()['result'][0]['link']
+
+    ydl_opts = {'format': 'bestaudio/best', "quiet": True,
+                "geo-bypass": True, "no-playlist": True, "flat-playlist": True}
+
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(link, download=False)
-    
+
     URL = info['formats'][0]['url']
     title = videosSearch.result()['result'][0]['title']
     duration = videosSearch.result()['result'][0]['duration']
     thumbnail = videosSearch.result()['result'][0]['thumbnails'][0]["url"]
-    return URL, title, duration, thumbnail, link;
-songs=[]
+    return URL, title, duration, thumbnail, link
+
+
+songs = []
+
+
 def audio_player(voice):
-    if len(songs) >0:    
-        FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+    if len(songs) > 0:
+        FFMPEG_OPTIONS = {
+            'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 
         #FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
-        voice.play(discord.FFmpegPCMAudio(songs[0]["url"], **FFMPEG_OPTIONS), after = lambda e: audio_player(voice))
+        voice.play(discord.FFmpegPCMAudio(
+            songs[0]["url"], **FFMPEG_OPTIONS), after=lambda e: audio_player(voice))
         songs.pop(0)
-        
+
+
 @client.command(aliases=["p"])
-async def play(ctx,*,song_name : str):
+async def play(ctx, *, song_name: str):
     if str(ctx.channel) != "commands":
         await ctx.send("All Music Commands only in Commands channel only.")
         return
     if ctx.author.voice and str(ctx.author.voice.channel) == "music":
         voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
         if not voice:
-            voiceChannel = discord.utils.get(ctx.guild.voice_channels, name='music')
+            voiceChannel = discord.utils.get(
+                ctx.guild.voice_channels, name='music')
             await voiceChannel.connect()
             voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
-        await ctx.send(f"🔎Searching for **{song_name}**")
+            await ctx.send(f"🔎Searching for **{song_name}**")
         try:
-            url , title, duration, thumbnail, link = audio_finder(song_name)
-            song_detail={"url":url,"title":title,"duration":duration,"thumbnail":thumbnail,"send":ctx.channel,"author":ctx.author,"link":link}
+            url, title, duration, thumbnail, link = audio_finder(song_name)
+            song_detail = {"url": url, "title": title, "duration": duration,"thumbnail": thumbnail, "send": ctx.channel, "author": ctx.author, "link": link}
             songs.append(song_detail)
             if not voice.is_playing():
                 audio_player(voice)
-                embed=discord.Embed(
-                    title = "Now Playing",
-                    description=f'''[{title}]({link})\n
-`Duration:` {duration}\n\n`Requested By:` {ctx.author}''',
-                    color = 0x32db3e   
+                embed = discord.Embed(
+                    title="Now Playing",
+                    description=f'''[{title}]({link})\n`Duration:` {duration}\n\n`Requested By:` {ctx.author}''',
+                    color=0x32db3e
                 )
                 embed.set_thumbnail(url=thumbnail)
                 await ctx.send(embed=embed)
             else:
-                
-                embed=discord.Embed(
-                    title = "Added To Queue",
+
+                embed = discord.Embed(
+                    title="Added To Queue",
                     description=f'''[{title}]({link})\n
 `Duration:` {duration}\n\n`Requested By:` {ctx.author}\n\n`Position in Queue:` {len(songs)}''',
-                    color = 0x4287f5   
+                    color=0x4287f5
                 )
                 embed.set_thumbnail(url=thumbnail)
                 await ctx.send(embed=embed)
         except:
             await ctx.send("An error occured! Try again!")
-        
+
     else:
         await ctx.send("Please connect to **music** channel to play music, then try again.")
 
+
 @client.command(aliases=["rm"])
-async def remove(ctx, song : str):
+async def remove(ctx, song: str):
     if str(ctx.channel) != "commands":
         await ctx.send("All Music Commands only in Commands channel only.")
         return
     if ctx.author.voice and str(ctx.author.voice.channel) == "music":
-        if len(songs)>=int(song):
+        if len(songs) >= int(song):
             delted = songs.pop(int(song)-1)
             await ctx.send(f'''`{delted["title"]}` has been removed from Queue.''')
         else:
@@ -266,25 +278,26 @@ async def remove(ctx, song : str):
     else:
         await ctx.send("Please connect to **music** channel to play music, then try again.")
 
+
 @client.command(aliases=["q"])
 async def queue(ctx):
     if str(ctx.channel) != "commands":
         await ctx.send("All Music Commands only in Commands channel only.")
         return
-    y=""
-    if len(songs)>0:
-        for i in range(1,len(songs)+1):
-            x =f'''`{i}.` [{songs[i-1]["title"]}]({songs[i-1]["link"]})\nDuration: {songs[i-1]["duration"]} **|** Requested By: {songs[i-1]["author"]}\n\n'''
-            y=y+x
-        embed=discord.Embed(
+    y = ""
+    if len(songs) > 0:
+        for i in range(1, len(songs)+1):
+            x = f'''`{i}.` [{songs[i-1]["title"]}]({songs[i-1]["link"]})\nDuration: {songs[i-1]["duration"]} **|** Requested By: {songs[i-1]["author"]}\n\n'''
+            y = y+x
+        embed = discord.Embed(
             title="Upcoming Songs",
-            color = 0xFFFF00,
-            description= f"{y}")
+            color=0xFFFF00,
+            description=f"{y}")
         await ctx.send(embed=embed)
     else:
         await ctx.send("Queue is Empty.")
-    
-    
+
+
 @client.command(aliases=["s"])
 async def skip(ctx):
     if str(ctx.channel) != "commands":
@@ -292,14 +305,15 @@ async def skip(ctx):
         return
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice.is_playing():
-        
-        if len(songs)>0:
+
+        if len(songs) > 0:
             voice.pause()
             audio_player(voice)
             await ctx.send("⏭ **Skipped**")
         else:
             await ctx.send("Queue is empty")
-    
+
+
 @client.command()
 async def stop(ctx):
     if str(ctx.channel) != "commands":
@@ -310,7 +324,9 @@ async def stop(ctx):
         voice.stop()
         songs.clear()
         await ctx.send("**🛑 Stopped**")
-@client.command(aliases=["dc","leave"])
+
+
+@client.command(aliases=["dc", "leave"])
 async def disconnect(ctx):
     if str(ctx.channel) != "commands":
         await ctx.send("All Music Commands only in Commands channel only.")
@@ -321,6 +337,8 @@ async def disconnect(ctx):
         songs.clear()
         await voice.disconnect()
         await ctx.send("**📬 Disconnected**")
+
+
 @client.command()
 async def pause(ctx):
     if str(ctx.channel) != "commands":
@@ -329,7 +347,9 @@ async def pause(ctx):
     voice = discord.utils.get(client.voice_clients, guild=ctx.guild)
     if voice and voice.is_playing():
         voice.pause()
-        await ctx.send("**⏸️ Paused**")  
+        await ctx.send("**⏸️ Paused**")
+
+
 @client.command()
 async def resume(ctx):
     if str(ctx.channel) != "commands":
@@ -339,5 +359,6 @@ async def resume(ctx):
     if voice and voice.is_paused():
         voice.resume()
         await ctx.send("**▶️ Resumed**")
-        
-client.run("MTAyMzI1NTE5NTYwNzYzODA0OA.GontbL.TzJzlRBbs4cpYGzB_2eBUrk8eZrk1UzfQAR4vU")
+
+client.run(
+    "MTAyMzUwMTk3ODA0NDc0Nzc4Ng.G8Xn_0.A5E1dY6crprgTngXgzTRb9FHaSpZoh6Fy8sYYY")
