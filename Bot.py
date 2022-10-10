@@ -361,4 +361,4 @@ async def resume(ctx):
         await ctx.send("**▶️ Resumed**")
 
 client.run(
-    "MTAyMzUwMTk3ODA0NDc0Nzc4Ng.G8Xn_0.A5E1dY6crprgTngXgzTRb9FHaSpZoh6Fy8sYYY")
+    "MTAyMzUwMTk3ODA0NDc0Nzc4Ng.G5smlA.KTz45NnHGqMBWd65Qj1FXaYj5iNOOxUd5SwOjk")
